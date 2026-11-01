@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import click
 
 from db import schema
@@ -55,42 +56,160 @@ def delsub(id):
         print("delete successfully")
 
 #planner
-def add_plan():pass
+@main.command()
+@click.argument("subid")
+@click.argument("title")
+@click.argument("planned_duration")
+def add_plan(subid, title, planned_duration):
+    result = planner.add_plan(subid, title, datetime.now(), planned_duration)
+    if result:
+        print(f"added plan: {title}")
 
 
-def remove_plan():pass
+@main.command()
+@click.argument("id")
+def remove_plan(id):
+    r = planner.remove_plan(id)
+    if r:
+        print("delete successfully")
 
 #summary
-def set_status():pass
+@main.command()
+@click.argument("id")
+@click.argument("status")
+def set_status(id, status):
+    r = planner.set_status(id, status)
+    if r:
+        print(f"edited id: {id}")
 
 
-def tthours():pass
+@main.command()
+def tthours():
+    total = sum_mod.total_hour()
+    print(f"total hours: {total}")
 
 
-def tthrs_each():pass
+@main.command()
+def tthrs_each():
+    rows = sum_mod.totalhr_each()
+    print(
+    f"{'ID':<5} {'NAME':<20} {'MINUTES':<15} {'SESSIONS':<10}"
+    )
+
+    for row in rows:
+        print(
+            f"{row['id']:<5}"
+            f"{row['name']:<20}"
+            f"{str(row['minutes']):<15}"
+            f"{str(row['sessions']):<10}"
+        )
 
 
-def completed():pass
+@main.command()
+def completed():
+    res = sum_mod.completed()
+    rate = sum_mod.comrate()
+    print(f"completed: {res['done']}/{res['total']} ({rate}%)")
 
 
-def compare():pass
+@main.command()
+def compare():
+    rows = sum_mod.compare()
+    print(
+    f"{'ID':<5} {'NAME':<20} {'PLANNED':<15} {'ACTUAL':<15}"
+    )
+
+    for row in rows:
+        print(
+            f"{row['id']:<5}"
+            f"{row['name']:<20}"
+            f"{str(row['planned']):<15}"
+            f"{str(row['actual']):<15}"
+        )
 
 #session
-def mkses():pass
+@main.command()
+@click.argument("subid")
+@click.argument("actual_duration")
+@click.argument("plan_id", default=0, required=False)
+def mkses(subid, actual_duration, plan_id):
+    r = session.make_session(subid, plan_id, actual_duration)
+    if r:
+        print(f"added session id: {r}")
 
 #search
 
-def search_():pass
+@main.command()
+@click.argument("keyword", required=False)
+@click.option("--title", default=None)
+@click.option("--subid", default=None)
+@click.option("--status", default=None)
+@click.option("--date", default=None)
+def search_(keyword, title, subid, status, date):
+    search_title = title if title is not None else keyword
+    rows = search.search_plans(
+        title=search_title,
+        subject_id=subid,
+        status=status,
+        planned_date=date
+    )
+    print(
+    f"{'ID':<5} {'SUB_ID':<8} {'TITLE':<25} {'DATE':<12} {'DURATION':<10} {'STATUS':<12}"
+    )
+
+    for row in rows:
+        print(
+            f"{row['id']:<5}"
+            f"{row['subject_id']:<8}"
+            f"{row['title']:<25}"
+            f"{str(row['planned_date']):<12}"
+            f"{str(row['planned_duration']):<10}"
+            f"{row['status']:<12}"
+        )
 
 #track
 
-def done():pass
+@main.command()
+@click.argument("id")
+def done(id):
+    r = progress.done_plan(id)
+    if r:
+        print(f"done id: {id}")
 
 
-def cnotcomp():pass
+@main.command()
+def cnotcomp():
+    rows = progress.check_undone()
+    print(
+    f"{'ID':<5} {'SUB_ID':<8} {'TITLE':<25} {'DATE':<12} {'DURATION':<10} {'STATUS':<12}"
+    )
+
+    for row in rows:
+        print(
+            f"{row['id']:<5}"
+            f"{row['subject_id']:<8}"
+            f"{row['title']:<25}"
+            f"{str(row['planned_date']):<12}"
+            f"{str(row['planned_duration']):<10}"
+            f"{row['status']:<12}"
+        )
 
 
-def history():pass
+@main.command()
+def history():
+    rows = progress.history()
+    print(
+    f"{'ID':<5} {'SUB_ID':<8} {'PLAN_ID':<10} {'DATE':<22} {'DURATION':<10}"
+    )
+
+    for row in rows:
+        print(
+            f"{row['id']:<5}"
+            f"{row['subject_id']:<8}"
+            f"{str(row['plan_id']):<10}"
+            f"{str(row['study_date'])[:19]:<22}"
+            f"{str(row['actual_duration']):<10}"
+        )
 
 
 if __name__ == "__main__":

@@ -45,7 +45,7 @@ def make_session(
         # Tạo session học
         cur = conn.execute(
             """
-            INSERT INTO log
+            INSERT INTO logs
             (
                 subject_id,
                 plan_id,
