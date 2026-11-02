@@ -19,7 +19,7 @@ def init_db():
             id               INTEGER PRIMARY KEY AUTOINCREMENT,
             subject_id       INTEGER NOT NULL,
             title            TEXT NOT NULL,
-            planned_date     DATE NOT NULL,
+            planned_date     DATE NOT NULL,  
             planned_duration INTEGER NOT NULL,
             status           TEXT DEFAULT 'pending'
                              CHECK(status IN ('pending','in_progress','done','skip')),

@@ -1,0 +1,23 @@
+#menu {
+    background: #6F4435;
+    border: solid green;
+    width: 1fr;
+
+}
+
+#right {
+    width: 3fr;
+    height: 1fr;
+}
+
+#pomodoro {
+    border: solid green;
+    height: 3fr;
+    padding: 1;
+}
+
+#task {
+    border: solid green;
+    height: 1fr;
+    padding: 1;
+}
